@@ -36,6 +36,7 @@ module.exports = function (req, res) {
   rows.forEach(row => {
     let centroid = row.centroid.split(',').map(util.floatPrecision7)
     let name = row.name_localized || row.name || undefined
+    let admin_level = row.admin_level || undefined
 
     let nameAlias = []
     if (query.aliaslimit > 0) { nameAlias = (row.names || '').split(String.fromCharCode(30)) }
@@ -50,6 +51,7 @@ module.exports = function (req, res) {
       id: row.id,
       source: row.source,
       name: name,
+      admin_level: admin_level,
       name_alias: nameAlias,
       abbr: row.abbr || undefined,
       abbr_alias: abbrAlias,

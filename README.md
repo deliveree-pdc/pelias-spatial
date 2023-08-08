@@ -63,6 +63,9 @@ ingress | docker run --rm -i \
 ```bash
 # run openstreetmap import
 # note: data generated using https://docs.osmcode.org/osmium/latest/
+# osmium tags-filter vietnam-latest.osm.pbf boundary=administrative -o vietnam-boundaries.pbf -O
+# osmium export -a type,id vietnam-boundaries.pbf -f geojsonseq -o vietnam-boundaries.geojsonl -O -x print_record_separator=false
+
 ingress() {
   EXTRACT_FILE='osmium.extract.geojsonl.gz'
   gzcat "${EXTRACT_FILE}"
