@@ -19,7 +19,7 @@ tap.test('functional - list classes', (t) => {
   ontology.create(db)
 
   // table empty
-  t.false(db.prepare(`SELECT * FROM place`).all().length, 'prior state')
+  t.notOk(db.prepare(`SELECT * FROM place`).all().length, 'prior state')
 
   // insert data
   insert.run({
@@ -50,7 +50,7 @@ tap.test('functional - list classes', (t) => {
   })
 
   // test response structure
-  t.deepEqual(row, [{
+  t.same(row, [{
     class: 'example_class_1',
     total: 2
   }, {
@@ -76,7 +76,7 @@ tap.test('functional - list types', (t) => {
   ontology.create(db)
 
   // table empty
-  t.false(db.prepare(`SELECT * FROM place`).all().length, 'prior state')
+  t.notOk(db.prepare(`SELECT * FROM place`).all().length, 'prior state')
 
   // insert data
   insert.run({
@@ -108,7 +108,7 @@ tap.test('functional - list types', (t) => {
   })
 
   // test response structure
-  t.deepEqual(row, [{
+  t.same(row, [{
     type: 'example_type_1',
     total: 1
   }, {
@@ -134,7 +134,7 @@ tap.test('functional - search by class & type', (t) => {
   ontology.create(db)
 
   // table empty
-  t.false(db.prepare(`SELECT * FROM place`).all().length, 'prior state')
+  t.notOk(db.prepare(`SELECT * FROM place`).all().length, 'prior state')
 
   // insert data
   insert.run({
@@ -167,7 +167,7 @@ tap.test('functional - search by class & type', (t) => {
   })
 
   // test response structure
-  t.deepEqual(row, [{
+  t.same(row, [{
     source: 'example_source',
     id: 'example_id'
   }], 'read')

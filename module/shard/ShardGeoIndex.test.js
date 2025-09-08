@@ -20,7 +20,7 @@ tap.test('create & drop', (t) => {
   }
 
   // column does not exist
-  t.false(introspectIndex().length, 'prior state')
+  t.notOk(introspectIndex().length, 'prior state')
 
   // create column
   let column = new ShardGeoColumn()
@@ -31,14 +31,14 @@ tap.test('create & drop', (t) => {
   index.create(db)
 
   // column exists
-  t.true(introspectIndex().length, 'create')
+  t.ok(introspectIndex().length, 'create')
 
   // drop index
   index.drop(db)
 
   // index should not exist
   // @todo: why is spatial_index_enabled still set to 1?
-  // t.deepEqual(introspectIndex(), [], 'drop')
+  // t.same(introspectIndex(), [], 'drop')
 
   t.end()
 })

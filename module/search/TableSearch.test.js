@@ -9,7 +9,7 @@ tap.test('create & drop', (t) => {
   let introspect = new SqliteIntrospect(db)
 
   // table does not exist
-  t.false(introspect.tables().includes('search'), 'prior state')
+  t.notOk(introspect.tables().includes('search'), 'prior state')
 
   // set up name module
   let name = new NameModule(db)
@@ -20,13 +20,13 @@ tap.test('create & drop', (t) => {
   search.setup()
 
   // table exists
-  t.true(introspect.tables().includes('search'), 'create')
+  t.ok(introspect.tables().includes('search'), 'create')
 
   // drop table
   search.table.search.drop(db)
 
   // table does not exist
-  t.false(introspect.tables().includes('search'), 'drop')
+  t.notOk(introspect.tables().includes('search'), 'drop')
 
   t.end()
 })
@@ -47,7 +47,7 @@ tap.test('definition', (t) => {
   let columns = introspect.columns('search')
 
   // field:source
-  t.deepEqual(columns[0], {
+  t.same(columns[0], {
     cid: 0,
     name: 'source',
     type: '',
@@ -57,7 +57,7 @@ tap.test('definition', (t) => {
   }, 'field:source')
 
   // field:id
-  t.deepEqual(columns[1], {
+  t.same(columns[1], {
     cid: 1,
     name: 'id',
     type: '',
@@ -67,7 +67,7 @@ tap.test('definition', (t) => {
   }, 'field:id')
 
   // field:lang
-  t.deepEqual(columns[2], {
+  t.same(columns[2], {
     cid: 2,
     name: 'lang',
     type: '',
@@ -77,7 +77,7 @@ tap.test('definition', (t) => {
   }, 'field:lang')
 
   // field:tag
-  t.deepEqual(columns[3], {
+  t.same(columns[3], {
     cid: 3,
     name: 'tag',
     type: '',
@@ -87,7 +87,7 @@ tap.test('definition', (t) => {
   }, 'field:tag')
 
   // field:name
-  t.deepEqual(columns[4], {
+  t.same(columns[4], {
     cid: 4,
     name: 'name',
     type: '',

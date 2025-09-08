@@ -13,20 +13,20 @@ tap.test('create & drop', (t) => {
   table.create(db)
 
   // index does not exist
-  t.false(introspect.indices('shard').length, 'prior state')
+  t.notOk(introspect.indices('shard').length, 'prior state')
 
   // create index
   let index = new IndexCovering()
   index.create(db)
 
   // index exists
-  t.true(introspect.indices('shard').length, 'create')
+  t.ok(introspect.indices('shard').length, 'create')
 
   // drop index
   index.drop(db)
 
   // index does not exist
-  t.false(introspect.indices('shard').length, 'drop')
+  t.notOk(introspect.indices('shard').length, 'drop')
 
   t.end()
 })
@@ -47,7 +47,7 @@ tap.test('definition', (t) => {
   let indices = introspect.indices('shard')
 
   // shard_idx_covering
-  t.deepEqual(indices[0], {
+  t.same(indices[0], {
     seq: 0,
     name: 'shard_idx_covering',
     unique: 1,

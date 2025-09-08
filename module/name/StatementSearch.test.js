@@ -19,7 +19,7 @@ tap.test('function', (t) => {
   search.create(db)
 
   // table empty
-  t.false(db.prepare(`SELECT * FROM name`).all().length, 'prior state')
+  t.notOk(db.prepare(`SELECT * FROM name`).all().length, 'prior state')
 
   // insert data
   insert.run({
@@ -58,7 +58,7 @@ tap.test('function', (t) => {
   })
 
   // test response structure
-  t.deepEqual(rows, [{
+  t.same(rows, [{
     source: 'example_source1',
     id: 'example_id1',
     name: 'example_name1'

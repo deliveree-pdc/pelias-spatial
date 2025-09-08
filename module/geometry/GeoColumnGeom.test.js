@@ -13,14 +13,14 @@ tap.test('create & drop', (t) => {
   table.create(db)
 
   // column does not exist
-  t.false(introspect.geometryColumns('geometry').filter(c => c.f_geometry_column === 'geom').length, 'prior state')
+  t.notOk(introspect.geometryColumns('geometry').filter(c => c.f_geometry_column === 'geom').length, 'prior state')
 
   // create column
   let column = new GeoColumnGeom()
   column.create(db)
 
   // column exists
-  t.true(introspect.geometryColumns('geometry').filter(c => c.f_geometry_column === 'geom').length, 'create')
+  t.ok(introspect.geometryColumns('geometry').filter(c => c.f_geometry_column === 'geom').length, 'create')
 
   // note: dropping geometry columns not fully supported by spatialite
   // drop column
@@ -28,7 +28,7 @@ tap.test('create & drop', (t) => {
 
   // column does not exist
   // @todo test this functionality if possible
-  // t.false(introspect.geometryColumns('geometry').filter(c => c.f_geometry_column === 'geom').length, 'drop')
+  // t.notOk(introspect.geometryColumns('geometry').filter(c => c.f_geometry_column === 'geom').length, 'drop')
 
   t.end()
 })
@@ -49,7 +49,7 @@ tap.test('definition', (t) => {
   let geom = introspect.columns('geometry').filter(c => c.name === 'geom')
 
   // geometry_idx_complexity
-  t.deepEqual(geom[0], {
+  t.same(geom[0], {
     cid: 3,
     name: 'geom',
     type: 'GEOMETRY',

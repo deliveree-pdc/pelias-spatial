@@ -1,8 +1,6 @@
 const tap = require('tap')
 const common = require('../../test/common')
 const TableHierarchy = require('./TableHierarchy')
-const ViewInsertProxy = require('./ViewInsertProxy')
-const TriggerOnInsert = require('./TriggerOnInsert')
 const StatementInsert = require('./StatementInsert')
 const IndexUnique = require('./IndexUnique')
 
@@ -17,20 +15,12 @@ tap.test('single insert', (t) => {
   let idx = new IndexUnique()
   idx.create(db)
 
-  // create view
-  let view = new ViewInsertProxy()
-  view.create(db)
-
-  // create trigger
-  let trigger = new TriggerOnInsert()
-  trigger.create(db)
-
   // prepare statement
   let stmt = new StatementInsert()
   stmt.create(db)
 
   // table empty
-  t.false(db.prepare(`SELECT * FROM hierarchy`).all().length, 'prior state')
+  t.notOk(db.prepare(`SELECT * FROM hierarchy`).all().length, 'prior state')
 
   // insert data
   let info = stmt.run({
@@ -38,29 +28,15 @@ tap.test('single insert', (t) => {
     parent_id: 'example_parent_id',
     child_source: 'example_child_source',
     child_id: 'example_child_id',
+    depth: 1,
     branch: 'default'
   })
 
   // insert info
-  // note: info is not available due to using INSTEAD OF INSERT
-  t.deepEqual(info, { changes: 0, lastInsertRowid: 0 }, 'write')
+  t.same(info, { changes: 1, lastInsertRowid: 1 }, 'write')
 
   // read data
-  t.deepEqual(db.prepare(`SELECT * FROM hierarchy`).all(), [{
-    parent_source: 'example_parent_source',
-    parent_id: 'example_parent_id',
-    child_source: 'example_parent_source',
-    child_id: 'example_parent_id',
-    depth: 0,
-    branch: 'default'
-  }, {
-    parent_source: 'example_child_source',
-    parent_id: 'example_child_id',
-    child_source: 'example_child_source',
-    child_id: 'example_child_id',
-    depth: 0,
-    branch: 'default'
-  }, {
+  t.same(db.prepare(`SELECT * FROM hierarchy`).all(), [{
     parent_source: 'example_parent_source',
     parent_id: 'example_parent_id',
     child_source: 'example_child_source',
@@ -83,20 +59,12 @@ tap.test('add parent', (t) => {
   let idx = new IndexUnique()
   idx.create(db)
 
-  // create view
-  let view = new ViewInsertProxy()
-  view.create(db)
-
-  // create trigger
-  let trigger = new TriggerOnInsert()
-  trigger.create(db)
-
   // prepare statement
   let stmt = new StatementInsert()
   stmt.create(db)
 
   // table empty
-  t.false(db.prepare(`SELECT * FROM hierarchy`).all().length, 'prior state')
+  t.notOk(db.prepare(`SELECT * FROM hierarchy`).all().length, 'prior state')
 
   // insert data
   stmt.run({
@@ -104,44 +72,25 @@ tap.test('add parent', (t) => {
     parent_id: 'example_parent_id',
     child_source: 'example_child_source',
     child_id: 'example_child_id',
+    depth: 1,
     branch: 'default'
   })
   stmt.run({
     parent_source: 'example_super_parent_source',
     parent_id: 'example_super_parent_id',
-    child_source: 'example_parent_source',
-    child_id: 'example_parent_id',
+    child_source: 'example_child_source',
+    child_id: 'example_child_id',
+    depth: 2,
     branch: 'default'
   })
 
   // read data
-  t.deepEqual(db.prepare(`SELECT * FROM hierarchy`).all(), [{
-    parent_source: 'example_parent_source',
-    parent_id: 'example_parent_id',
-    child_source: 'example_parent_source',
-    child_id: 'example_parent_id',
-    depth: 0,
-    branch: 'default'
-  }, {
-    parent_source: 'example_child_source',
-    parent_id: 'example_child_id',
-    child_source: 'example_child_source',
-    child_id: 'example_child_id',
-    depth: 0,
-    branch: 'default'
-  }, {
+  t.same(db.prepare(`SELECT * FROM hierarchy`).all(), [{
     parent_source: 'example_parent_source',
     parent_id: 'example_parent_id',
     child_source: 'example_child_source',
     child_id: 'example_child_id',
     depth: 1,
-    branch: 'default'
-  }, {
-    parent_source: 'example_super_parent_source',
-    parent_id: 'example_super_parent_id',
-    child_source: 'example_super_parent_source',
-    child_id: 'example_super_parent_id',
-    depth: 0,
     branch: 'default'
   }, {
     parent_source: 'example_super_parent_source',
@@ -149,13 +98,6 @@ tap.test('add parent', (t) => {
     child_source: 'example_child_source',
     child_id: 'example_child_id',
     depth: 2,
-    branch: 'default'
-  }, {
-    parent_source: 'example_super_parent_source',
-    parent_id: 'example_super_parent_id',
-    child_source: 'example_parent_source',
-    child_id: 'example_parent_id',
-    depth: 1,
     branch: 'default'
   }],
   'read')
@@ -173,79 +115,45 @@ tap.test('add child', (t) => {
   let idx = new IndexUnique()
   idx.create(db)
 
-  // create view
-  let view = new ViewInsertProxy()
-  view.create(db)
-
-  // create view
-  let trigger = new TriggerOnInsert()
-  trigger.create(db)
-
   // prepare statement
   let stmt = new StatementInsert()
   stmt.create(db)
 
   // table empty
-  t.false(db.prepare(`SELECT * FROM hierarchy`).all().length, 'prior state')
+  t.notOk(db.prepare(`SELECT * FROM hierarchy`).all().length, 'prior state')
 
   // insert data
+  stmt.run({
+    parent_source: 'example_super_parent_source',
+    parent_id: 'example_super_parent_id',
+    child_source: 'example_child_source',
+    child_id: 'example_child_id',
+    depth: 2,
+    branch: 'default'
+  })
   stmt.run({
     parent_source: 'example_parent_source',
     parent_id: 'example_parent_id',
     child_source: 'example_child_source',
     child_id: 'example_child_id',
-    branch: 'default'
-  })
-  stmt.run({
-    parent_source: 'example_child_source',
-    parent_id: 'example_child_id',
-    child_source: 'example_super_child_source',
-    child_id: 'example_super_child_id',
+    depth: 1,
     branch: 'default'
   })
 
   // read data
-  t.deepEqual(db.prepare(`SELECT * FROM hierarchy`).all(), [{
-    parent_source: 'example_parent_source',
-    parent_id: 'example_parent_id',
-    child_source: 'example_parent_source',
-    child_id: 'example_parent_id',
-    depth: 0,
-    branch: 'default'
-  }, {
-    parent_source: 'example_child_source',
-    parent_id: 'example_child_id',
+  t.same(db.prepare(`SELECT * FROM hierarchy`).all(), [{
+    parent_source: 'example_super_parent_source',
+    parent_id: 'example_super_parent_id',
     child_source: 'example_child_source',
     child_id: 'example_child_id',
-    depth: 0,
-    branch: 'default'
-  }, {
-    parent_source: 'example_parent_source',
-    parent_id: 'example_parent_id',
-    child_source: 'example_child_source',
-    child_id: 'example_child_id',
-    depth: 1,
-    branch: 'default'
-  }, {
-    parent_source: 'example_super_child_source',
-    parent_id: 'example_super_child_id',
-    child_source: 'example_super_child_source',
-    child_id: 'example_super_child_id',
-    depth: 0,
-    branch: 'default'
-  }, {
-    parent_source: 'example_child_source',
-    parent_id: 'example_child_id',
-    child_source: 'example_super_child_source',
-    child_id: 'example_super_child_id',
-    depth: 1,
-    branch: 'default'
-  }, {
-    parent_source: 'example_parent_source',
-    parent_id: 'example_parent_id',
-    child_source: 'example_super_child_source',
-    child_id: 'example_super_child_id',
     depth: 2,
+    branch: 'default'
+  }, {
+    parent_source: 'example_parent_source',
+    parent_id: 'example_parent_id',
+    child_source: 'example_child_source',
+    child_id: 'example_child_id',
+    depth: 1,
     branch: 'default'
   }],
   'read')

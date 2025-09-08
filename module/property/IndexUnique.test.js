@@ -13,20 +13,20 @@ tap.test('create & drop', (t) => {
   table.create(db)
 
   // index does not exist
-  t.false(introspect.indices('property').length, 'prior state')
+  t.notOk(introspect.indices('property').length, 'prior state')
 
   // create index
   let index = new IndexUnique()
   index.create(db)
 
   // index exists
-  t.true(introspect.indices('property').length, 'create')
+  t.ok(introspect.indices('property').length, 'create')
 
   // drop index
   index.drop(db)
 
   // index does not exist
-  t.false(introspect.indices('property').length, 'drop')
+  t.notOk(introspect.indices('property').length, 'drop')
 
   t.end()
 })
@@ -47,7 +47,7 @@ tap.test('definition', (t) => {
   let indices = introspect.indices('property')
 
   // property_idx_unique
-  t.deepEqual(indices[0], {
+  t.same(indices[0], {
     seq: 0,
     name: 'property_idx_unique',
     unique: 1,

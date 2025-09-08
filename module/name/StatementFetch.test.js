@@ -19,7 +19,7 @@ tap.test('function', (t) => {
   fetch.create(db)
 
   // table empty
-  t.false(db.prepare(`SELECT * FROM name`).all().length, 'prior state')
+  t.notOk(db.prepare(`SELECT * FROM name`).all().length, 'prior state')
 
   // insert data
   insert.run({
@@ -58,7 +58,7 @@ tap.test('function', (t) => {
   })
 
   // test response structure
-  t.deepEqual(rows, [{
+  t.same(rows, [{
     lang: 'example_lang1',
     tag: 'example_tag1',
     abbr: false,

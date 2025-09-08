@@ -2,9 +2,9 @@ const tap = require('tap')
 const common = require('../../test/common')
 const TableHierarchy = require('./TableHierarchy')
 const IndexUnique = require('./IndexUnique')
-const ViewInsertProxy = require('./ViewInsertProxy')
-const TriggerOnInsert = require('./TriggerOnInsert')
-const StatementInsert = require('./StatementInsert')
+const ViewInsertParent = require('./ViewInsertParent')
+const TriggerOnInsertParent = require('./TriggerOnInsertParent')
+const StatementInsert = require('./StatementInsertParent')
 const StatementFetch = require('./StatementFetch')
 
 tap.test('function', (t) => {
@@ -19,11 +19,11 @@ tap.test('function', (t) => {
   idx.create(db)
 
   // create view
-  let view = new ViewInsertProxy()
+  let view = new ViewInsertParent()
   view.create(db)
 
   // create view
-  let trigger = new TriggerOnInsert()
+  let trigger = new TriggerOnInsertParent()
   trigger.create(db)
 
   // prepare statement
@@ -35,7 +35,7 @@ tap.test('function', (t) => {
   fetch.create(db)
 
   // table empty
-  t.false(db.prepare(`SELECT * FROM hierarchy`).all().length, 'prior state')
+  t.notOk(db.prepare(`SELECT * FROM hierarchy`).all().length, 'prior state')
 
   // insert data
   insert.run({
@@ -57,7 +57,7 @@ tap.test('function', (t) => {
   })
 
   // test response structure
-  t.deepEqual(rows, [{
+  t.same(rows, [{
     parent_source: 'example_child_source',
     parent_id: 'example_child_id',
     child_source: 'example_child_source',

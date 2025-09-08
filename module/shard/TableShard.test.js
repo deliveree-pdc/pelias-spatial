@@ -9,7 +9,7 @@ tap.test('create & drop', (t) => {
   let introspect = new SqliteIntrospect(db)
 
   // table does not exist
-  t.false(introspect.tables().includes('shard'), 'prior state')
+  t.notOk(introspect.tables().includes('shard'), 'prior state')
 
   // set up geometry module
   let geometry = new GeometryModule(db)
@@ -20,13 +20,13 @@ tap.test('create & drop', (t) => {
   shard.setup()
 
   // table exists
-  t.true(introspect.tables().includes('shard'), 'create')
+  t.ok(introspect.tables().includes('shard'), 'create')
 
   // drop table
   shard.table.shard.drop(db)
 
   // table does not exist
-  t.false(introspect.tables().includes('shard'), 'drop')
+  t.notOk(introspect.tables().includes('shard'), 'drop')
 
   t.end()
 })
@@ -105,7 +105,7 @@ tap.test('definition', (t) => {
   let columns = introspect.columns('shard')
 
   // source
-  t.deepEqual(columns[0], {
+  t.same(columns[0], {
     cid: 0,
     name: 'source',
     type: 'TEXT',
@@ -115,7 +115,7 @@ tap.test('definition', (t) => {
   }, 'source')
 
   // id
-  t.deepEqual(columns[1], {
+  t.same(columns[1], {
     cid: 1,
     name: 'id',
     type: 'TEXT',
@@ -125,7 +125,7 @@ tap.test('definition', (t) => {
   }, 'id')
 
   // role
-  t.deepEqual(columns[2], {
+  t.same(columns[2], {
     cid: 2,
     name: 'role',
     type: 'TEXT',
@@ -135,7 +135,7 @@ tap.test('definition', (t) => {
   }, 'role')
 
   // element
-  t.deepEqual(columns[3], {
+  t.same(columns[3], {
     cid: 3,
     name: 'element',
     type: 'INTEGER',

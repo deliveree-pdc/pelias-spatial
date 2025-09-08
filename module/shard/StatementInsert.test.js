@@ -22,7 +22,7 @@ tap.test('function', (t) => {
   stmt.create(db)
 
   // table empty
-  t.false(db.prepare(`SELECT * FROM shard`).all().length, 'prior state')
+  t.notOk(db.prepare(`SELECT * FROM shard`).all().length, 'prior state')
 
   // insert data
   let info = stmt.run({
@@ -34,10 +34,10 @@ tap.test('function', (t) => {
   })
 
   // insert info
-  t.deepEqual(info, { changes: 1, lastInsertRowid: 1 }, 'write')
+  t.same(info, { changes: 1, lastInsertRowid: 1 }, 'write')
 
   // read data
-  t.deepEqual(db.prepare(`SELECT *, AsBinary(geom) AS geom FROM shard`).all(), [{
+  t.same(db.prepare(`SELECT *, AsBinary(geom) AS geom FROM shard`).all(), [{
     source: 'example_source',
     id: 'example_id',
     role: 'default',
