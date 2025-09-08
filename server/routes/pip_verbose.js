@@ -36,7 +36,9 @@ module.exports = function (req, res) {
   // rewrite response to emulate 'wof-admin-lookup' format
   let resp = {}
   rows.forEach(row => {
-    const name = row.name_localized || row.name || undefined
+    let centroid = row.centroid.split(',').map(util.floatPrecision7)
+    let name = row.name_localized || row.name || undefined
+    let admin_level = row.admin_level || undefined
 
     let nameAlias = []
     if (query.aliaslimit > 0) { nameAlias = (row.names || '').split(String.fromCharCode(30)) }
@@ -62,7 +64,8 @@ module.exports = function (req, res) {
     resp[row.type].push({
       id: row.id,
       source: row.source,
-      name,
+      name: name,
+      admin_level: admin_level,
       name_alias: nameAlias,
       abbr: row.abbr || undefined,
       abbr_alias: abbrAlias,
