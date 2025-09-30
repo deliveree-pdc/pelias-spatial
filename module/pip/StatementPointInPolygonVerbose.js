@@ -35,6 +35,14 @@ class StatementPeliasView extends SqliteStatement {
             X( centroid.geom ) || ',' || Y( centroid.geom )
           ) AS centroid,
           (
+            SELECT value
+            FROM property
+            WHERE source = place.source
+            AND id = place.id
+            AND key='osm:admin_level'
+            LIMIT 1
+          ) AS admin_level,
+          (
             SELECT name
             FROM ${dbname}.name
             WHERE source = place.source

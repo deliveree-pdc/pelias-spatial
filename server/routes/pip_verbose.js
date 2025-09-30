@@ -37,6 +37,7 @@ module.exports = function (req, res) {
   let resp = {}
   rows.forEach(row => {
     const name = row.name_localized || row.name || undefined
+    const admin_level = row.admin_level || undefined
 
     let nameAlias = []
     if (query.aliaslimit > 0) { nameAlias = (row.names || '').split(String.fromCharCode(30)) }
@@ -62,7 +63,8 @@ module.exports = function (req, res) {
     resp[row.type].push({
       id: row.id,
       source: row.source,
-      name,
+      name: name,
+      admin_level: admin_level,
       name_alias: nameAlias,
       admin_level: row.admin_level || undefined,
       abbr: row.abbr || undefined,
