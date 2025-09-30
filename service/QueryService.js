@@ -19,6 +19,7 @@ class QueryService {
     let dbconf = { fileMustExist: true }
     if (this.config.readonly === true) { dbconf.readonly = true }
     if (this.config.verbose === true) { dbconf.verbose = console.error }
+    console.log('config.filename', this.config.filename)
     this.db = new Database(this.config.filename, dbconf)
 
     // set up modules

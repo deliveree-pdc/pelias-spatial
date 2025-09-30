@@ -64,6 +64,7 @@ module.exports = function (req, res) {
       source: row.source,
       name,
       name_alias: nameAlias,
+      admin_level: row.admin_level || undefined,
       abbr: row.abbr || undefined,
       abbr_alias: abbrAlias,
       ...boundsAndCentroid(row),
