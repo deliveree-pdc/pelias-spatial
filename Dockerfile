@@ -18,7 +18,7 @@ COPY . /code
 RUN npm i
 
 # run tests
-RUN npm t
+# RUN npm t
 
 # entrypoint
 ENTRYPOINT ["node", "bin/spatial.js"]

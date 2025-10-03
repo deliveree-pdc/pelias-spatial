@@ -103,7 +103,6 @@ app.get('/place/:source/:id/relationship/intersects', require('./routes/relation
 app.get('/place/:source/:id/relationship/contains', require('./routes/relationship').contains)
 app.get('/place/:source/:id/relationship/within', require('./routes/relationship').within)
 app.get('/place/:source/:id/property', require('./routes/property'))
-app.get('/place/:source/:id/name', require('./routes/name'))
 app.get('/place/:source/:id/hierarchy', require('./routes/hierarchy'))
 app.get('/query/pip', require('./routes/pip'))
 app.get('/query/pip/verbose', require('./routes/pip_verbose'))
@@ -112,6 +111,8 @@ app.get('/query/search', require('./routes/search'))
 app.get('/ontology', require('./routes/ontology'))
 app.get('/ontology/:class', require('./routes/ontology'))
 app.get('/ontology/:class/:type', require('./routes/ontology'))
+app.get('/place/:source/:id/name', require('./routes/name'))
+app.get('/placeholder/:source/names', require('./routes/name').multiple)
 
 // demo pages
 app.use('/explore', express.static(`${__dirname}/demo`))

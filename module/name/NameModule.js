@@ -4,6 +4,7 @@ const IndexIdentity = require('./IndexIdentity')
 const IndexUnique = require('./IndexUnique')
 const StatementInsert = require('./StatementInsert')
 const StatementFetch = require('./StatementFetch')
+const StatementMultipleFetch = require('./StatementMutipleFetch')
 const StatementSearch = require('./StatementSearch')
 
 class NameModule extends Module {
@@ -19,6 +20,7 @@ class NameModule extends Module {
     this.statement = {
       insert: new StatementInsert(),
       fetch: new StatementFetch(),
+      multipleFetch: new StatementMultipleFetch(),
       search: new StatementSearch()
     }
   }
