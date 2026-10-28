@@ -1,0 +1,12 @@
+.nyc_output
+.tap
+coverage
+test
+Dockerfile
+.dockerignore
+.git
+.gitignore
+.github/
+*.db
+.jshintignore
+.jshintrc

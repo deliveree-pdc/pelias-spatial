@@ -1,3 +1,106 @@
+<p align="center">
+  <img height="100" src="https://raw.githubusercontent.com/pelias/design/master/logo/pelias_github/Github_markdown_hero.png">
+</p>
+<h3 align="center">A modular, open-source search engine for our world.</h3>
+<p align="center">Pelias is a geocoder powered completely by open data, available freely to everyone.</p>
+<p align="center">
+<a href="https://github.com/pelias/api/actions"><img src="https://github.com/pelias/api/workflows/Continuous%20Integration/badge.svg" /></a>
+<a href="https://en.wikipedia.org/wiki/MIT_License"><img src="https://img.shields.io/github/license/pelias/api?style=flat&color=orange" /></a>
+<a href="https://hub.docker.com/u/pelias"><img src="https://img.shields.io/docker/pulls/pelias/api?style=flat&color=informational" /></a>
+<a href="https://gitter.im/pelias/pelias"><img src="https://img.shields.io/gitter/room/pelias/pelias?style=flat&color=yellow" /></a>
+</p>
+<p align="center">
+	<a href="https://github.com/pelias/docker">Local Installation</a> ·
+        <a href="https://geocode.earth">Cloud Webservice</a> ·
+	<a href="https://github.com/pelias/documentation">Documentation</a> ·
+	<a href="https://gitter.im/pelias/pelias">Community Chat</a>
+</p>
+<details open>
+<summary>What is Pelias?</summary>
+<br />
+Pelias is a search engine for places worldwide, powered by open data. It turns addresses and place names into geographic coordinates, and turns geographic coordinates into places and addresses. With Pelias, you’re able to turn your users’ place searches into actionable geodata and transform your geodata into real places.
+<br /><br />
+We think open data, open source, and open strategy win over proprietary solutions at any part of the stack and we want to ensure the services we offer are in line with that vision. We believe that an open geocoder improves over the long-term only if the community can incorporate truly representative local knowledge.
+</details>
+
+# Pelias Spatial Service
+
+Lightweight spatial service used by Pelias — provides point-in-polygon (PIP) lookups, geometry, relationships and ontology data via a small HTTP API and demo pages.
+
+## HTTP endpoints
+
+All endpoints are GET endpoints unless noted. See `server/routes/*` for parameter details and exact output shape.
+
+- GET `/place/:source/:id`
+  Return place metadata by source and id.
+
+- GET `/place/:source/:id/geometry`
+  Return all geometry roles for the place.
+
+- GET `/place/:source/:id/geometry/:role`
+  Return geometry for a specific role (e.g. `intersection`, `shape`, etc.).
+
+- GET `/place/:source/:id/relationship/intersects`
+  Return places that intersect the given place.
+
+- GET `/place/:source/:id/relationship/contains`
+  Return places that contain the given place.
+
+- GET `/place/:source/:id/relationship/within`
+  Return places within the given place.
+
+- GET `/place/:source/:id/property`
+  Return properties for the place.
+
+- GET `/place/:source/:id/name`
+  Return names for the place.
+
+- GET `/place/:source/:id/hierarchy`
+  Return the administrative hierarchy for the place.
+
+- GET `/query/pip`
+  Point-in-polygon lookup (compact view). Query parameters are handled by the pip route implementation in server/routes/pip.js.
+
+- GET `/query/pip/verbose`
+  Point-in-polygon lookup (verbose view), returns detailed match records.
+
+- GET `/query/pip/_view/pelias/:lon/:lat`
+  Pelias-compatible PIP view (legacy Pelias format).  
+  - Path params: lon, lat  
+  - Query params: `layers` (comma-separated list) is supported by the Pelias view implementation and filters the output layers. See server/routes/pip_pelias.js for details.
+
+- GET `/query/search`
+  General spatial search endpoint (see server/routes/search.js for supported query parameters).
+
+- GET `/ontology`
+  Return top-level ontology index.
+
+- GET `/ontology/:class`
+  Return ontology entries for a class.
+
+- GET `/ontology/:class/:type`
+  Return ontology entries for a class/type pair.
+
+Demo pages and utilities:
+- GET `/explore` (static demo UI at server/demo)  
+- GET `/explore/place/:source/:id ` 
+- GET `/explore/pip` 
+- GET `/explore/ontology`
+- GET `/explore/ontology/:class/:type`
+
+Root:
+- GET `/` redirects to `/explore/pip`
+
+## Examples
+
+Pelias PIP view (Pelias-compatible response):
+
+    curl -s "http://localhost:3000/query/pip/_view/pelias/170.97/-45.09?layers=locality,region"
+
+Simple place lookup:
+
+    curl -s "http://localhost:3000/place/whosonfirst/85633345"
+
 # Docker Development
 
 ```bash
@@ -47,7 +150,7 @@ docker run --rm -i \
 
 ```bash
 # run whosonfirst import
-# note: database sourced from https://dist.whosonfirst.org/sqlite/
+# note: database sourced from https://geocode.earth/data/whosonfirst/
 ingress() {
   WOFDB='/data/wof/sqlite/whosonfirst-data-admin-nz-latest.db'
   EXTRACT_QUERY='SELECT json_extract(body, "$") FROM geojson'
@@ -75,6 +178,25 @@ ingress | docker run --rm -i \
   -v "${PWD}:/data" \
   pelias/spatial \
   import osmium --db=/data/geo.docker.db
+```
+
+```bash
+# run overture import (supports division and division_area themes)
+# note: data queried using DuckDB against S3 parquet files
+# requires: duckdb CLI (brew install duckdb)
+
+# first, source the overture_export_geojson_by_bbox function (see "Overture Helper Function" section below)
+
+ingress() {
+  # New Zealand bounding box: xmin, ymin, xmax, ymax
+  overture_export_geojson_by_bbox divisions division 165 -48 179 -34
+  overture_export_geojson_by_bbox divisions division_area 165 -48 179 -34
+}
+
+ingress | docker run --rm -i \
+  -v "${PWD}:/data" \
+  pelias/spatial \
+  import overture --db=/data/geo.docker.db
 ```
 
 ```bash
@@ -135,7 +257,7 @@ node bin/spatial.js merge --db=/data/empty.db /data/external.db
 
 ```bash
 # run whosonfirst import
-# note: database sourced from https://dist.whosonfirst.org/sqlite/
+# note: database sourced from https://geocode.earth/data/whosonfirst/
 ingress() {
   WOFDB='/data/wof/sqlite/whosonfirst-data-admin-nz-latest.db'
   EXTRACT_QUERY='SELECT json_extract(body, "$") FROM geojson'
@@ -157,6 +279,22 @@ ingress | node bin/spatial.js --db=geo.local.db import osmium
 ```
 
 ```bash
+# run overture import (supports division and division_area themes)
+# note: data queried using DuckDB against S3 parquet files
+# requires: duckdb CLI (brew install duckdb)
+
+# first, source the overture_export_geojson_by_bbox function (see "Overture Helper Function" section below)
+
+ingress() {
+  # New Zealand bounding box: xmin, ymin, xmax, ymax
+  overture_export_geojson_by_bbox divisions division 165 -48 179 -34
+  overture_export_geojson_by_bbox divisions division_area 165 -48 179 -34
+}
+
+ingress | node bin/spatial.js --db=geo.local.db import overture
+```
+
+```bash
 # start the HTTP server on port 3000
 node bin/spatial.js server --db=geo.local.db
 ```
@@ -164,6 +302,50 @@ node bin/spatial.js server --db=geo.local.db
 ```bash
 # run point-in-polygon query
 node bin/spatial.js --db=geo.local.db pip 174.766843 -41.288788
+```
+
+# Overture Helper Function
+
+The Overture import requires a bash helper function to query DuckDB against S3 parquet files. Copy this function to your shell or save it to a file and source it:
+
+```bash
+overture_export_geojson_by_bbox() {
+  local theme="${1:?Missing theme (e.g., divisions, buildings, places)}"
+  local type="${2:?Missing type (e.g., division_area, division_boundary)}"
+  local xmin="${3:?Missing xmin (western longitude)}"
+  local ymin="${4:?Missing ymin (southern latitude)}"
+  local xmax="${5:?Missing xmax (eastern longitude)}"
+  local ymax="${6:?Missing ymax (northern latitude)}"
+
+  local OVERTURE_RELEASE="2026-09-23.1"
+  local S3_BASE="s3://overturemaps-us-west-2/release/${OVERTURE_RELEASE}"
+
+  duckdb -noheader -list -c "
+INSTALL spatial; LOAD spatial;
+WITH data AS (
+  SELECT *, row_number() OVER () as rn
+  FROM read_parquet('${S3_BASE}/theme=${theme}/type=${type}/*', filename=true, hive_partitioning=1)
+  WHERE bbox.xmin < ${xmax} AND bbox.xmax > ${xmin}
+    AND bbox.ymin < ${ymax} AND bbox.ymax > ${ymin}
+)
+SELECT json_object(
+  'id', data.id,
+  'type', 'Feature',
+  'geometry', ST_AsGeoJSON(data.geometry)::JSON,
+  'properties', (SELECT to_json(r) FROM (SELECT * EXCLUDE (id, geometry, filename, theme, type, rn) FROM data d WHERE d.rn = data.rn) r)
+)
+FROM data;
+"
+}
+```
+
+**Usage:**
+```bash
+# Export division areas for New Zealand
+overture_export_geojson_by_bbox divisions division_area 165 -48 179 -34
+
+# Export division points for Indonesia
+overture_export_geojson_by_bbox divisions division 106 -7 107 -6
 ```
 
 # Performance Testing

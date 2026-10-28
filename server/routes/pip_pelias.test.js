@@ -1,8 +1,8 @@
 const _ = require('lodash')
 const tap = require('tap')
-const pelias = require('./pip_pelias')
+const pelias = require('./pip_pelias').controller
 const mock = require('node-mocks-http')
-const proxy = (fn) => _.set({}, 'locals.service.module.pip.statement.verbose.all', fn)
+const proxy = (fn) => _.set({}, 'locals.service.module.pip.statement.summary.all', fn)
 
 tap.test('remapFromHierarchy - Martinborough', (t) => {
   let res = mock.createResponse()
@@ -11,14 +11,9 @@ tap.test('remapFromHierarchy - Martinborough', (t) => {
     app: proxy((query) => {
       t.same(query, {
         lon: 175.4166635,
-        lat: -41.221498,
-        limit: 1000,
-        aliaslimit: 0,
-        sources: '\u001ewof\u001e',
-        lang: 'und',
-        hierarchy: 1
+        lat: -41.221498
       })
-      return require('./fixtures/martinborough_verbose.rows.json')
+      return require('./fixtures/martinborough_summary.rows.json')
     })
   })
 
@@ -30,7 +25,7 @@ tap.test('remapFromHierarchy - Martinborough', (t) => {
         id: 101914287,
         name: 'Martinborough',
         centroid: { lat: -41.2232135, lon: 175.4797177 },
-        bounding_box: '175.400001,-41.301336,175.564123,-41.145135'
+        bounding_box: '175.400013,-41.301336,175.564123,-41.145135'
       }
     ],
     county: [
@@ -38,7 +33,7 @@ tap.test('remapFromHierarchy - Martinborough', (t) => {
         id: 102079347,
         name: 'South Wairarapa District',
         abbr: 'SP',
-        centroid: { lat: -41.2673995, lon: 175.417743 },
+        centroid: { lat: -41.2674375, lon: 175.4177081 },
         bounding_box: '174.958653,-41.613549,175.809775,-40.921064'
       }
     ],
@@ -56,7 +51,7 @@ tap.test('remapFromHierarchy - Martinborough', (t) => {
         id: 85687233,
         name: 'Wellington Region',
         abbr: 'WG',
-        centroid: { lat: -41.2214985, lon: 175.4166635 },
+        centroid: { lat: -41.220145, lon: 175.417246 },
         bounding_box: '174.388038,-41.815112,176.56406,-40.628591'
       }
     ]
@@ -71,14 +66,9 @@ tap.test('remapFromHierarchy - Oamaru', (t) => {
     app: proxy((query) => {
       t.same(query, {
         lon: 170.96879300000001,
-        lat: -45.098982,
-        limit: 1000,
-        aliaslimit: 0,
-        sources: '\u001ewof\u001e',
-        lang: 'und',
-        hierarchy: 1
+        lat: -45.098982
       })
-      return require('./fixtures/oamaru_verbose.rows.json')
+      return require('./fixtures/oamaru_summary.rows.json')
     })
   })
 
@@ -89,7 +79,7 @@ tap.test('remapFromHierarchy - Oamaru', (t) => {
       {
         id: 101914699,
         name: 'Oamaru',
-        centroid: { lat: -45.0927995, lon: 170.9676509 },
+        centroid: { lat: -45.092746, lon: 170.9677059 },
         bounding_box: '170.949378,-45.103048,170.983274,-45.083577'
       }
     ],
@@ -115,11 +105,8 @@ tap.test('remapFromHierarchy - Oamaru', (t) => {
       {
         id: 1729238521,
         name: 'Oamaru',
-        centroid: {
-          lat: -45.073514,
-          lon: 170.9569513
-        },
-        bounding_box: '170.897807,-45.122193,171.01932,-45.024824'
+        centroid: { lat: -45.0734125, lon: 170.9570003 },
+        bounding_box: '170.897807,-45.122193,171.019312,-45.024824'
       }
     ],
     region: [
@@ -127,8 +114,8 @@ tap.test('remapFromHierarchy - Oamaru', (t) => {
         id: 85687201,
         name: 'Otago Region',
         abbr: 'OT',
-        centroid: { lat: -45.3973235, lon: 170.1778035 },
-        bounding_box: '168.116395,-46.839379,171.406801,-43.955411'
+        centroid: { lat: -45.3968555, lon: 170.1775072 },
+        bounding_box: '168.116395,-46.839379,171.406801,-43.955425'
       }
     ]
   })
@@ -144,12 +131,7 @@ tap.test('remapFromHierarchy - Untrusted Layers - Single Match', (t) => {
     app: proxy((query) => {
       t.same(query, {
         lon: 1,
-        lat: 1,
-        limit: 1000,
-        aliaslimit: 0,
-        sources: '\u001ewof\u001e',
-        lang: 'und',
-        hierarchy: 1
+        lat: 1
       })
       return [
         {
@@ -209,12 +191,7 @@ tap.test('remapFromHierarchy - Untrusted Layers - Multi Match', (t) => {
     app: proxy((query) => {
       t.same(query, {
         lon: 1,
-        lat: 1,
-        limit: 1000,
-        aliaslimit: 0,
-        sources: '\u001ewof\u001e',
-        lang: 'und',
-        hierarchy: 1
+        lat: 1
       })
       return [
         {
@@ -306,14 +283,9 @@ tap.test('pelias - layer filter', (t) => {
     app: proxy((query) => {
       t.same(query, {
         lon: 170.96879300000001,
-        lat: -45.098982,
-        limit: 1000,
-        aliaslimit: 0,
-        sources: '\u001ewof\u001e',
-        lang: 'und',
-        hierarchy: 1
+        lat: -45.098982
       })
-      return require('./fixtures/oamaru_verbose.rows.json')
+      return require('./fixtures/oamaru_summary.rows.json')
     })
   })
 
@@ -334,8 +306,87 @@ tap.test('pelias - layer filter', (t) => {
         id: 85687201,
         name: 'Otago Region',
         abbr: 'OT',
-        centroid: { lat: -45.3973235, lon: 170.1778035 },
-        bounding_box: '168.116395,-46.839379,171.406801,-43.955411'
+        centroid: { lat: -45.3968555, lon: 170.1775072 },
+        bounding_box: '168.116395,-46.839379,171.406801,-43.955425'
+      }
+    ]
+  })
+  t.end()
+})
+
+// at time of writin the locality of lancing has -1 values for {region, county, continent}
+// https://spelunker.whosonfirst.org/id/1125843731
+tap.test('remapFromHierarchy - Lancing', (t) => {
+  let res = mock.createResponse()
+  let req = mock.createRequest({
+    params: { lon: -0.332593, lat: 50.830056 },
+    app: proxy((query) => {
+      t.same(query, {
+        lon: -0.332593,
+        lat: 50.830056
+      })
+      return require('./fixtures/lancing_summary.rows.json')
+    })
+  })
+
+  pelias(req, res)
+  t.equal(200, res.statusCode)
+  t.same(res._getJSONData(), {
+    locality: [
+      {
+        id: 1125843731,
+        name: 'Lancing',
+        centroid: { lat: 50.83314, lon: -0.3085617 },
+        bounding_box: '-0.337211,50.816041,-0.284364,50.849996'
+      }
+    ],
+    localadmin: [
+      {
+        id: 404433635,
+        name: 'Lancing Civil Parish',
+        centroid: { lat: 50.8331403, lon: -0.3085615 },
+        bounding_box: '-0.3372113,50.8160407,-0.2843642,50.849996'
+      }
+    ],
+    county: [
+      {
+        id: 1880771683,
+        name: 'Adur',
+        centroid: { lat: 50.845215, lon: -0.2939033 },
+        bounding_box: '-0.371517,50.81603,-0.215295,50.874738'
+      }
+    ],
+    macrocounty: [
+      {
+        id: 1880762061,
+        name: 'West Sussex',
+        centroid: { lat: 50.944699, lon: -0.5276061 },
+        bounding_box: '-0.957597,50.722029,0.04455,51.167304'
+      }
+    ],
+    country: [
+      {
+        id: 85633159,
+        name: 'United Kingdom',
+        abbr: 'GBR',
+        centroid: { lat: 54.314473, lon: -1.9212754 },
+        bounding_box: '-8.649996,49.864632,1.768975,60.860867'
+      }
+    ],
+    empire: [
+      {
+        id: 136253055,
+        name: 'United Kingdom',
+        centroid: { lat: 54.3140933, lon: -1.9116522 },
+        bounding_box: '-130.7530818,-59.4727516,72.4946395,60.8478865'
+      }
+    ],
+    continent: [
+      {
+        id: 102191581,
+        name: 'Europe',
+        centroid: { lat: 53.5665955, lon: 34.4425412 },
+        bounding_box: '-24.539906,34.815009,69.033946,81.85871'
       }
     ]
   })
