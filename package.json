@@ -2,7 +2,7 @@
   "name": "pelias-spatial",
   "version": "0.0.0-development",
   "author": "pelias",
-  "description": "Pelias Geometry Service",
+  "description": "Pelias Spatial Service",
   "homepage": "https://github.com/pelias/spatial",
   "license": "MIT",
   "main": "index.js",
@@ -19,7 +19,8 @@
     "server": "./bin/start",
     "format_check": "./node_modules/standard/bin/cmd.js",
     "format_fix": "./node_modules/standard/bin/cmd.js --fix",
-    "lint": "jshint ."
+    "lint": "jshint .",
+    "ci": "npm run env_check && npm test"
   },
   "repository": {
     "type": "git",
@@ -29,12 +30,12 @@
     "url": "https://github.com/pelias/spatial/issues"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=22.0.0"
   },
   "dependencies": {
     "@mapbox/polyline": "^1.1.1",
     "@turf/buffer": "^5.1.5",
-    "better-sqlite3": "^12.2.0",
+    "better-sqlite3": "13.0.3",
     "bindings": "^1.5.0",
     "csv-parse": "^4.8.2",
     "express": "^4.17.1",
@@ -44,16 +45,17 @@
     "locale": "^0.1.0",
     "lodash": "^4.17.15",
     "morgan": "^1.9.1",
-    "pelias-logger": "^1.4.1",
+    "pelias-config": "^7.0.0",
+    "pelias-logger": "^2.0.0",
+    "pelias-whosonfirst": "^9.0.0",
     "split2": "^3.1.1",
     "through2": "^3.0.1",
     "turf-point": "^2.0.1",
-    "wkx": "^0.4.8",
+    "wkx": "^0.5.0",
     "yargs": "^13.3.0"
   },
   "devDependencies": {
-    "difflet": "^1.0.1",
-    "glob": "^7.1.6",
+    "mitata": "^1.0.34",
     "node-mocks-http": "^1.17.2",
     "precommit-hook": "^3.0.0",
     "semver": "^6.3.0",
@@ -73,5 +75,8 @@
   "release": {
     "branch": "master",
     "success": []
+  },
+  "allowScripts": {
+    "better-sqlite3@13.0.3": true
   }
 }

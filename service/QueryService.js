@@ -1,3 +1,4 @@
+const fs = require('fs')
 const Database = require('better-sqlite3')
 const ServiceConfiguration = require('../config/ServiceConfiguration')
 const SpatialiteModule = require('../module/spatialite/SpatialiteModule')
@@ -19,7 +20,13 @@ class QueryService {
     let dbconf = { fileMustExist: true }
     if (this.config.readonly === true) { dbconf.readonly = true }
     if (this.config.verbose === true) { dbconf.verbose = console.error }
-    console.log('config.filename', this.config.filename)
+
+    // ensure database file exists
+    if (!fs.existsSync(this.config.filename)) {
+      console.error(`database file not found: ${this.config.filename}`)
+      process.exit(1)
+    }
+
     this.db = new Database(this.config.filename, dbconf)
 
     // set up modules
@@ -49,6 +56,11 @@ class QueryService {
     // setup modules
     for (let name in this.module) {
       this.module[name].setup(this.config)
+    }
+  }
+  close () {
+    for (let name in this.module) {
+      this.module[name].close(this.config)
     }
   }
 }

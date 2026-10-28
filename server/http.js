@@ -24,8 +24,8 @@ const through = require('through2')
 const handlebars = require('express-handlebars')
 const helpers = require('handlebars-helpers')()
 const QueryService = require('../service/QueryService')
-const logger = require('pelias-logger').get('geometry')
-const dbFilename = process.argv[2] || 'geo.db'
+const logger = require('pelias-logger').get('spatial')
+const filename = process.argv[2]
 
 // select the amount of cpus we will use
 const envCpus = parseInt(process.env.CPUS, 10)
@@ -68,11 +68,12 @@ app.engine('.hbs', handlebars({
 app.set('view engine', '.hbs')
 
 // init service
-logger.info(`load: ${dbFilename}`)
 const service = new QueryService({
   readonly: true,
-  filename: dbFilename
+  pelias: true,
+  filename
 })
+logger.info(`load: ${service.config.filename}`)
 
 // store $service on app
 app.locals.service = service
@@ -106,7 +107,7 @@ app.get('/place/:source/:id/property', require('./routes/property'))
 app.get('/place/:source/:id/hierarchy', require('./routes/hierarchy'))
 app.get('/query/pip', require('./routes/pip'))
 app.get('/query/pip/verbose', require('./routes/pip_verbose'))
-app.get('/query/pip/_view/pelias/:lon/:lat', require('./routes/pip_pelias'))
+app.get('/query/pip/_view/pelias/:lon/:lat', require('./routes/pip_pelias').controller)
 app.get('/query/search', require('./routes/search'))
 app.get('/ontology', require('./routes/ontology'))
 app.get('/ontology/:class', require('./routes/ontology'))
