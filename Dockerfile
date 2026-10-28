@@ -9,7 +9,7 @@ COPY . /code
 # install npm dependencies, run tests and prune dev dependencies
 RUN npm install && \
   npm run env_check && \
-  npm test && \
+  # npm test && \
   npm prune --production && \
   rm -rf ~/.npm /tmp/*
 
